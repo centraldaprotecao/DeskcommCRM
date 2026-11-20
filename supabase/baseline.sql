@@ -45418,3 +45418,32 @@ comment on column public.ai_agent_versions.inbound_debounce_ms is
 alter table public.ai_agent_versions
   add constraint ai_agent_versions_inbound_debounce_ms_check
   check (inbound_debounce_ms is null or (inbound_debounce_ms >= 0 and inbound_debounce_ms <= 60000));
+
+-- ---- Claude Haiku 5.5 no catálogo e na tabela de custo (migration 0501) ----
+-- 0501: linha em `ai_models` (tela de escolha) e em `ai_pricing` (soma do orçamento) para
+-- `claude-haiku-5-5`. Preço da tabela oficial, lida em 2026-11-20, faixa até 100k tokens por
+-- requisição (acima disso as tarifas são 5×). Idempotente; não muda o padrão de nenhum provedor.
+insert into public.ai_models
+  (provider, model_id, display_name, description,
+   input_price_per_million_cents, output_price_per_million_cents, supports_tools)
+values
+  ('anthropic', 'claude-haiku-5-5', 'Claude Haiku 5.5',
+   'Rápido e barato, bom para atendimento e classificação. Preço até 100 mil tokens por requisição ($0,10/$0,50 por milhão); acima disso todas as tarifas são 5×.',
+   10, 50, true)
+on conflict (provider, model_id) do update set
+  display_name = excluded.display_name,
+  description = excluded.description,
+  input_price_per_million_cents = excluded.input_price_per_million_cents,
+  output_price_per_million_cents = excluded.output_price_per_million_cents,
+  supports_tools = excluded.supports_tools;
+
+insert into public.ai_pricing
+  (model, prompt_cents_per_million_tokens, completion_cents_per_million_tokens, notes)
+values
+  ('claude-haiku-5-5', 10, 50,
+   'catálogo 0501 — platform.claude.com/docs/en/about-claude/pricing, 2026-11-20; faixa até 100k tokens/requisição, acima 5×')
+on conflict (model) do update set
+  prompt_cents_per_million_tokens = excluded.prompt_cents_per_million_tokens,
+  completion_cents_per_million_tokens = excluded.completion_cents_per_million_tokens,
+  notes = excluded.notes,
+  superseded_at = null;

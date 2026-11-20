@@ -54,6 +54,12 @@ const USD_PER_MTOK: Record<string, Preco> = {
   'claude-sonnet-4-5': { input: 3, output: 15, cacheRead: 0.3, cacheWrite5m: 3.75, cacheWrite1h: 6 },
   'claude-sonnet-4': { input: 3, output: 15, cacheRead: 0.3, cacheWrite5m: 3.75, cacheWrite1h: 6 },
   'claude-haiku-4-5': { input: 1, output: 5, cacheRead: 0.1, cacheWrite5m: 1.25, cacheWrite1h: 2 },
+  // Haiku 5.5: tabela oficial (platform.claude.com, conferida em 2026-11-20), faixa de prompt até
+  // 100 mil tokens. Acima de 100 mil tokens por requisição TODAS as tarifas são 5× (0,50/2,50) e
+  // esta tabela não modela a faixa: agente de atendimento fica muito abaixo disso. A segunda chave é
+  // o id com ponto que o OpenRouter devolve (`anthropic/claude-haiku-5.5`).
+  'claude-haiku-5-5': { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite5m: 0.125, cacheWrite1h: 0.2 },
+  'claude-haiku-5.5': { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite5m: 0.125, cacheWrite1h: 0.2 },
   'claude-opus-5': { input: 5, output: 25, cacheRead: 0.5, cacheWrite5m: 6.25, cacheWrite1h: 10 },
   'claude-opus-4-8': { input: 5, output: 25, cacheRead: 0.5, cacheWrite5m: 6.25, cacheWrite1h: 10 },
   'claude-opus-4-7': { input: 5, output: 25, cacheRead: 0.5, cacheWrite5m: 6.25, cacheWrite1h: 10 },
